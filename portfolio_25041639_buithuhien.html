@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Cá Nhân - Thiết Kế Pastel</title>
+    <!-- Nhúng Font chữ Google (Quicksand & Inter mang lại phong cách hiện đại, thanh lịch) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- ĐỊNH NGHĨA BIẾN MÀU PASTEL --- */
+        :root {
+            /* Theme Sáng */
+            --bg-primary: #f0f7f4;
+            --bg-secondary: #e6f0fa;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --pastel-blue: #a2d2ff;
+            --pastel-green: #b7e4c7;
+            --pastel-blue-dark: #70a1ff;
+            --pastel-green-dark: #74c69d;
+            --border-color: rgba(255, 255, 255, 0.8);
+            --shadow-color: rgba(142, 202, 230, 0.15);
+            --glow-color: rgba(183, 228, 199, 0.4);
+        }
+
+        [data-theme="dark"] {
+            /* Theme Tối phong cách Pastel */
+            --bg-primary: #1e2522;
+            --bg-secondary: #1a202c;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f7fafc;
+            --text-muted: #cbd5e0;
+            --pastel-blue: #70a1ff;
+            --pastel-green: #52b788;
+            --pastel-blue-dark: #374151;
+            --pastel-green-dark: #2d3748;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --glow-color: rgba(82, 183, 136, 0.2);
+        }
+
+        /* --- THIẾT LẬP CHUNG --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+        }
+
+        /* --- HIỆU ỨNG ĐỐM PASTEL CHUYỂN ĐỘNG TRÊN NỀN --- */
+        .ambient-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: floatBlob 15s infinite alternate ease-in-out;
+        }
+
+        .blob-blue {
+            width: 400px;
+            height: 400px;
+            background: var(--pastel-blue);
+            top: -100px;
+            left: -100px;
+        }
+
+        .blob-green {
+            width: 500px;
+            height: 500px;
+            background: var(--pastel-green);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 30px) scale(1.1); }
+            100% { transform: translate(-30px, 50px) scale(0.9); }
+        }
+
+        /* --- CÁC NÚT ĐIỀU KHIỂN CHUNG --- */
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 999;
+        }
+
+        .control-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            background: var(--pastel-blue);
+            color: #1e2522;
+        }
+
+        /* Thanh tiến trình cuộn trang */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--pastel-blue), var(--pastel-green));
+            width: 0%;
+            z-index: 1000;
+        }
+
+        /* --- BỐ CỤC CHÍNH --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 50px 40px;
+            border-radius: 24px;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            backdrop-filter: blur(15px);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        /* Class kích hoạt hiệu ứng cuộn xuất hiện */
+        section.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tiêu đề mục */
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 15%;
+            width: 70%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--pastel-blue), var(--pastel-green));
+            border-radius: 10px;
+        }
+
+        /* --- PHẦN TRANG ĐẦU (HERO SECTION) --- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 85vh;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+        }
+
+        .profile-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        /* Khung bo tròn có hiệu ứng viền chuyển động phát sáng */
+        .profile-frame {
+            width: 220px;
+            height: 220px;
+            border-radius: 40px; /* Bo tròn sành điệu */
+            overflow: hidden;
+            border: 6px solid var(--card-bg);
+            box-shadow: 0 15px 35px var(--shadow-color);
+            background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-green));
+            z-index: 2;
+            position: relative;
+        }
+
+        .profile-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .profile-frame:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Vòng hào quang phát sáng phía sau ảnh */
+        .profile-glow {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 48px;
+            background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-green));
+            z-index: 1;
+            filter: blur(15px);
+            opacity: 0.6;
+            animation: pulseGlow 4s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.98); opacity: 0.5; }
+            100% { transform: scale(1.04); opacity: 0.8; }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(120deg, var(--text-main), var(--pastel-blue-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textFocus 1s ease-in-out;
+        }
+
+        /* Hiệu ứng gõ chữ giới thiệu */
+        .typing-container {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            min-height: 24px;
+        }
+
+        .hero-details-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px 40px;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            transform: scale(0.95);
+            animation: popIn 0.8s 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+        }
+
+        .hero-details-card p {
+            margin: 8px 0;
+            font-size: 1.05rem;
+        }
+
+        .hero-details-card strong {
+            color: var(--pastel-blue-dark);
+        }
+
+        /* --- PHẦN MỤC TIÊU VÀ SƠ ĐỒ TƯ DUY --- */
+        .goal-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: justify;
+            text-justify: inter-word;
+            padding: 10px;
+        }
+
+        /* SƠ ĐỒ TƯ DUY (MINDMAP) */
+        .mindmap-wrapper {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px dashed var(--border-color);
+            position: relative;
+        }
+
+        .mindmap-central-node {
+            background: linear-gradient(135deg, var(--pastel-blue) 0%, var(--pastel-green) 100%);
+            color: #1e2522;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 250px;
+            margin: 0 auto 50px auto;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            border: 2px solid white;
+            position: relative;
+        }
+
+        /* Nhánh kết nối bằng CSS */
+        .mindmap-branches {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            position: relative;
+        }
+
+        .mindmap-branch-node {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .mindmap-branch-node:hover {
+            transform: translateY(-5px);
+            border-color: var(--pastel-green);
+            box-shadow: 0 8px 25px var(--glow-color);
+        }
+
+        .mindmap-branch-node h4 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--pastel-blue-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Chỗ trống người dùng có thể tự chỉnh sửa nội dung nhanh ngay trên web */
+        .editable-area {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            outline: none;
+            border: 1px dashed transparent;
+            padding: 5px;
+            border-radius: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.5;
+        }
+
+        .editable-area:focus {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--pastel-blue);
+        }
+
+        /* --- PHẦN DỰ ÁN (PROJECTS GRID) --- */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 15px;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 15px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease;
+        }
+
+        /* Đường ranh giới sắc màu ở đầu thẻ */
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--pastel-blue), var(--pastel-green));
+            opacity: 0.8;
+            transition: height 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px var(--shadow-color);
+        }
+
+        .project-card:hover::before {
+            height: 10px;
+        }
+
+        .project-tag {
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--pastel-blue-dark);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .project-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .project-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .project-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--pastel-green-dark);
+        }
+
+        .project-action i {
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover .project-action i {
+            transform: translateX(5px);
+        }
+
+        /* --- KHUNG TRÌNH CHIẾU TÀI LIỆU (MODAL VIEW) --- */
+        .viewer-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .viewer-box {
+            background: var(--bg-primary);
+            width: 90%;
+            max-width: 960px;
+            height: 85vh;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-color);
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .viewer-box.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .viewer-bar {
+            padding: 15px 25px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viewer-bar h3 {
+            font-size: 1.15rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .viewer-close-btn {
+            background: #e63946;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .viewer-close-btn:hover {
+            background: #c1121f;
+            transform: scale(1.05);
+        }
+
+        .viewer-body {
+            flex: 1;
+            background: #f1f5f9;
+        }
+
+        .viewer-body iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- CHÂN TRANG (FOOTER) --- */
+        footer {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            backdrop-filter: blur(15px);
+            margin-bottom: 20px;
+        }
+
+        .footer-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .contact-grid {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .contact-item {
+            background: var(--card-bg);
+            padding: 12px 24px;
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--pastel-blue);
+            background: var(--bg-primary);
+        }
+
+        .contact-item i {
+            font-size: 1.1rem;
+            color: var(--pastel-blue-dark);
+        }
+
+        /* Nhãn thông báo đã copy */
+        .toast-notify {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text-main);
+            color: var(--bg-primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1001;
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .toast-notify.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- HIỆU ỨNG ANIMATIONS KHÁC --- */
+        @keyframes textFocus {
+            0% { filter: blur(12px); opacity: 0; }
+            100% { filter: blur(0); opacity: 1; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mindmap-branches {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .section-title {
+                font-size: 1.7rem;
+            }
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ĐỐM MÀU PASTEL CHUYỂN ĐỘNG NỀN -->
+    <div class="ambient-blob blob-blue"></div>
+    <div class="ambient-blob blob-green"></div>
+
+    <!-- THANH TIẾN TRÌNH CUỘN -->
+    <div class="progress-bar" id="pageScrollProgress"></div>
+
+    <!-- BẢNG ĐIỀU KHIỂN GIAO DIỆN -->
+    <div class="controls">
+        <button class="control-btn" id="themeToggle" title="Đổi giao diện Sáng/Tối">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+        <button class="control-btn" id="scrollTopBtn" style="display: none;" title="Cuộn lên đầu trang">
+            <i class="fa-solid fa-arrow-up"></i>
+        </button>
+    </div>
+
+    <!-- CONTAINER CHÍNH -->
+    <div class="container">
+
+        <!-- SECTION 1: TRANG ĐẦU (HERO SECTION) -->
+        <section class="hero reveal">
+            <div class="profile-container">
+                <div class="profile-glow"></div>
+                <div class="profile-frame">
+                    <!-- Link ảnh đại diện (Thay link ảnh của bạn vào đây) -->
+<img src="https://i.ibb.co/HD6WBrr8/blob.jpg" alt="Uploaded Image">                </div>
+            </div>
+            
+            <!-- Tên sinh viên -->
+            <h1>Bùi Thu Hiền</h1>
+            
+            <!-- Chữ chạy giới thiệu bản thân -->
+            <div class="typing-container">
+                <span id="typedText"></span><span style="animation: blink 0.7s infinite;">|</span>
+            </div>
+            
+            <!-- Thẻ thông tin nhanh -->
+            <div class="hero-details-card">
+                <p><strong>Mã số sinh viên:</strong> 25041639</p>
+                <p><strong>Ngành học:</strong> Ngôn ngữ Trung Quốc</p>
+                <p><strong>Cơ sở đào tạo:</strong> Trường Đại Học Ngoại Ngữ - ĐHQGHN</p>
+            </div>
+        </section>
+
+        <!-- SECTION 2: MỤC TIÊU & SƠ ĐỒ TƯ DUY -->
+        <section id="goals" class="reveal">
+            <h2 class="section-title">Mục Tiêu & Định Hướng Phát Triển</h2>
+            <div class="goal-container">
+                <div class="about-text">
+                    <p>Mình định hướng phát triển bản thân theo hướng khai thác dữ liệu và chuyển đổi số. Bản thân mong muốn không chỉ nắm bắt vững vàng các công nghệ nền tảng mà còn ứng dụng thành thạo các mô hình AI để giải quyết các vấn đề thực tiễn một cách thông minh và sáng tạo. Portfolio này đóng vai trò như một nhật ký số ghi lại toàn bộ hành trình tích lũy và chuyển mình của bản thân trong kỷ nguyên số hóa.</p>
+                </div>
+
+                <!-- Sơ đồ tư duy dạng tùy biến nội dung -->
+                <div class="mindmap-wrapper">
+                    <!-- Nút trung tâm -->
+                    <div class="mindmap-central-node">
+                        <strong>Mục Tiêu Portfolio</strong>
+                    </div>
+                    
+                    <!-- Các nhánh (Click trực tiếp vào đoạn văn để tự sửa nội dung nhanh) -->
+                    <div class="mindmap-branches">
+                        <div class="mindmap-branch-node" title="Nhấp vào để sửa nội dung">
+                            <h4>Ngắn hạn</h4>
+                            <div class="editable-area" contenteditable="true">
+                                Lưu trữ hệ thống hóa toàn bộ kiến thức, bài tập của lớp Công nghệ số & AI.
+                            </div>
+                        </div>
+
+                        <div class="mindmap-branch-node" title="Nhấp vào để sửa nội dung">
+                            <h4>Trung hạn</h4>
+                            <div class="editable-area" contenteditable="true">
+                                Tự làm chủ và tích hợp các ứng dụng AI vào học tập, làm việc hiệu quả.
+                            </div>
+                        </div>
+
+                        <div class="mindmap-branch-node" title="Nhấp vào để sửa nội dung">
+                            <h4>Dài hạn</h4>
+                            <div class="editable-area" contenteditable="true">
+                                Xây dựng hồ sơ kỹ năng số chuyên nghiệp phục vụ cho cơ hội nghề nghiệp tương lai.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: CÁC DỰ ÁN NHẬP MÔN CÔNG NGHỆ SỐ & AI -->
+        <section id="projects" class="reveal">
+            <h2 class="section-title">Các dự án Nhập môn Công nghệ số và AI</h2>
+            
+            <div class="projects-grid">
+                <!-- Tuần 1: Thay thế 'LINK_FILE_TUAN_1' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 1 - Máy tính và các thiết bị ngoại vi', 'https://drive.google.com/file/d/1bzQ267kf2phSFpoT4DKq0BzA9yDyp2CL/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 01</span>
+                    <h3>Máy tính và các thiết bị ngoại vi</h3>
+                    <p>Bước khởi đầu trang bị bộ kỹ năng thiết yếu trong môi trường đại học hiện đại.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+
+                <!-- Tuần 2: Thay thế 'LINK_FILE_TUAN_2' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 2 - Khai thác dữ liệu và thông tin', 'https://drive.google.com/file/d/1Oe6I8fZcXbyLUSFr34Qct46IgljycWWy/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 02</span>
+                    <h3>Khai thác dữ liệu và thông tin</h3>
+                    <p>Trang bị kiến thức và kỹ năng thực hành cần thiết để khai thác, quản lý và sử dụng dữ liệu, thông tin một cách có hiệu quả và trách nhiệm trong môi trường số.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+
+                <!-- Tuần 3: Thay thế 'LINK_FILE_TUAN_3' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 3 - Tổng quan về Trí tuệ nhân tạo', 'https://drive.google.com/file/d/1bsE7fMptKhreR76FU0zPk6ma_wzF7QfJ/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 03</span>
+                    <h3>Tổng quan về Trí tuệ nhân tạo</h3>
+                    <p>Sử dụng AI như một công cụ, tư duy một cách phản biện, khai thác tiềm năng của AI.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+
+                <!-- Tuần 4: Thay thế 'LINK_FILE_TUAN_4' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 4 - Giao tiếp và hợp tác trong môi trường số', 'https://drive.google.com/file/d/15-3WBK7h5BZYLSrODHB8ZwjLflfB0Xwe/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 04</span>
+                    <h3>Giao tiếp và hợp tác trong môi trường số</h3>
+                    <p>Trang bị kiến thức và kỹ năng thực hành cần thiết để giao tiếp và hợp tác hiệu quả trong môi trường số.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+
+                <!-- Tuần 5: Thay thế 'LINK_FILE_TUAN_5' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 5 - Sáng tạo nội dung số', 'https://drive.google.com/file/d/1ioWfBBHL6nzvVKxAZn6fcSA12m1ZWhDh/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 05</span>
+                    <h3>Sáng tạo nội dung số</h3>
+                    <p>Sáng tạo nội dung số một cách có hiệu quả và có trách nhiệm trong học tập và cuộc sống.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+
+                <!-- Tuần 6: Thay thế 'LINK_FILE_TUAN_6' bằng link của bạn -->
+                <div class="project-card" onclick="openFileViewer('Bài 6 - An toàn và Liêm chính học thuật trong môi trường số', 'https://drive.google.com/file/d/1_-c4CtoFIp36DZcTZy-NtYvGcrOxlscN/view?usp=drive_link')">
+                    <span class="project-tag">Tuần 06</span>
+                    <h3>An toàn và Liêm chính học thuật trong môi trường số</h3>
+                    <p>Đảm bảo an toàn thông tin cá nhân và duy trì tính liêm chính học thuật trong môi trường số.</p>
+                    <div class="project-action">Xem tài liệu <i class="fa-solid fa-arrow-right"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: CHÂN TRANG (FOOTER / LIÊN HỆ) -->
+        <footer class="reveal">
+            <h2 class="footer-title">Thông Tin Liên Hệ</h2>
+            
+            <div class="contact-grid">
+                <!-- Facebook Link -->
+                <a class="contact-item" href="https://web.facebook.com/thuhien.b.07" target="_blank">
+                    <i class="fa-brands fa-facebook"></i>
+                    <span>Facebook</span>
+                </a>
+                
+                <!-- Sao chép Email nhanh -->
+                <div class="contact-item" onclick="copyToClipboard('thuhienbui07hy@gmail.com', 'Đã sao chép địa chỉ Email!')">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>thuhienbui07hy@gmail.com</span>
+                </div>
+
+                <!-- Sao chép Điện thoại nhanh -->
+                <div class="contact-item" onclick="copyToClipboard('0988068410', 'Đã sao chép số điện thoại!')">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>0988 068 410</span>
+                </div>
+            </div>
+            
+            <p style="font-size: 0.9rem; color: var(--text-muted);">&copy; 2026 Designed by Bùi Thu Hiền.</p>
+        </footer>
+
+    </div>
+
+    <!-- KHUNG XEM CHI TIẾT FILE (MODAL VIEW) -->
+    <div class="viewer-backdrop" id="viewerBackdrop">
+        <div class="viewer-box" id="viewerBox">
+            <div class="viewer-bar">
+                <h3 id="currentDocTitle"><i class="fa-regular fa-file-pdf"></i> Tên tài liệu</h3>
+                <button class="viewer-close-btn" onclick="closeFileViewer()">Đóng màn hình</button>
+            </div>
+            <div class="viewer-body">
+                <iframe id="docViewerIframe" src="" allow="autoplay"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP THÔNG BÁO COPIED -->
+    <div class="toast-notify" id="toastMessage">Đã sao chép vào bộ nhớ tạm!</div>
+
+    <!-- --- PHẦN KỊCH BẢN JAVASCRIPT --- -->
+    <script>
+        /* 1. HIỆU ỨNG CHỮ CHẠY (TYPING EFFECT) TỰ ĐỘNG */
+        const textArray = ["Welcome to my portfolio  ", "Nơi lưu trữ hành trình khám phá Công nghệ số & AI.  "];
+        let textIndex = 0;
+        let charIndex = 0;
+        const speed = 70;
+        const eraseSpeed = 30;
+        const delayBetween = 2000;
+        const typedTextSpan = document.getElementById("typedText");
+
+        function type() {
+            if (charIndex < textArray[textIndex].length) {
+                typedTextSpan.textContent += textArray[textIndex].charAt(charIndex);
+                charIndex++;
+                setTimeout(type, speed);
+            } else {
+                setTimeout(erase, delayBetween);
+            }
+        }
+
+        function erase() {
+            if (charIndex > 0) {
+                typedTextSpan.textContent = textArray[textIndex].substring(0, charIndex - 1);
+                charIndex--;
+                setTimeout(erase, eraseSpeed);
+            } else {
+                textIndex = (textIndex + 1) % textArray.length;
+                setTimeout(type, speed);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(type, 1000);
+        });
+
+        /* 2. CHUYỂN ĐỔI GIAO DIỆN SÁNG / TỐI (LIGHT/DARK PASTEL MODE) */
+        const themeToggle = document.getElementById("themeToggle");
+        themeToggle.addEventListener("click", () => {
+            const currentTheme = document.body.getAttribute("data-theme");
+            if (currentTheme === "dark") {
+                document.body.removeAttribute("data-theme");
+                themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+            } else {
+                document.body.setAttribute("data-theme", "dark");
+                themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+            }
+        });
+
+        /* 3. ĐIỀU KHIỂN CHUYỂN ĐỘNG CUỘN TRANG (REVEAL ON SCROLL) */
+        const sections = document.querySelectorAll("section");
+        const scrollTopBtn = document.getElementById("scrollTopBtn");
+        const progressBarr = document.getElementById("pageScrollProgress");
+
+        const checkScroll = () => {
+            const triggerBottom = window.innerHeight * 0.85;
+            
+            // Hiện/Ẩn các section khi cuộn đến
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < triggerBottom) {
+                    section.classList.add("reveal");
+                }
+            });
+
+            // Hiện/Ẩn nút cuộn lên đầu trang
+            if (window.scrollY > 400) {
+                scrollTopBtn.style.display = "flex";
+            } else {
+                scrollTopBtn.style.display = "none";
+            }
+
+            // Tính toán thanh tiến trình cuộn trang
+            const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (window.scrollY / totalScrollHeight) * 100;
+            progressBarr.style.width = scrollPercent + "%";
+        };
+
+        window.addEventListener("scroll", checkScroll);
+        window.addEventListener("load", checkScroll); // chạy kiểm tra lần đầu khi load trang
+
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        /* 4. CHỨC NĂNG XEM FILE TÀI LIỆU (PDF/DOCX) TRỰC TIẾP QUA GOOGLE DRIVE EMBED */
+        const backdrop = document.getElementById("viewerBackdrop");
+        const viewerBox = document.getElementById("viewerBox");
+        const iframe = document.getElementById("docViewerIframe");
+        const docTitle = document.getElementById("currentDocTitle");
+
+        function openFileViewer(title, fileUrl) {
+            docTitle.innerHTML = `<i class="fa-regular fa-file-lines"></i> ${title}`;
+            
+            // Xử lý link Google Drive tự động chuyển sang chế độ preview nếu là link chia sẻ thông thường
+            let embedUrl = fileUrl;
+            
+            // HƯỚNG DẪN: Nếu không dùng link google drive thực tế, trình xem sẽ hiện thông báo mẫu.
+            if(fileUrl.startsWith('LINK_FILE')) {
+                // Đây là trường hợp link giả định, nhúng trực tiếp trang Wikipedia mẫu hoặc trang tài liệu demo
+                embedUrl = "https://vi.wikipedia.org/wiki/Tr%C3%AD_tu%E1%BB%87_nh%C3%A2n_t%E1%BA%A1o";
+            } else if (fileUrl.includes("drive.google.com")) {
+                // Tự động tối ưu định dạng link Google Drive để xem mượt trong Iframe
+                embedUrl = fileUrl.replace('/view?usp=sharing', '/preview').replace('/view', '/preview');
+            }
+            
+            iframe.src = embedUrl;
+            
+            // Hiệu ứng Fade in cho Modal
+            backdrop.style.display = "flex";
+            setTimeout(() => {
+                viewerBox.classList.add("show");
+            }, 50);
+        }
+
+        function closeFileViewer() {
+            viewerBox.classList.remove("show");
+            setTimeout(() => {
+                backdrop.style.display = "none";
+                iframe.src = ""; // Dừng hoàn toàn tiến trình tải ngầm
+            }, 300);
+        }
+
+        // Đóng khi click ra vùng ngoài khung xem
+        backdrop.addEventListener("click", (e) => {
+            if (e.target === backdrop) {
+                closeFileViewer();
+            }
+        });
+
+        /* 5. TÍNH NĂNG SAO CHÉP NHANH (COPY TO CLIPBOARD TOOLTIP) */
+        function copyToClipboard(text, notifyText) {
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById("toastMessage");
+                toast.textContent = notifyText;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 2500);
+            }).catch(err => {
+                console.error('Không thể copy: ', err);
+            });
+        }
+    </script>
+    
+    <style>
+        /* Animation nhấp nháy cho con trỏ chữ chạy */
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</body>
+</html>
